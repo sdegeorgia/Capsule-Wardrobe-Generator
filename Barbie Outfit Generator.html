@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ Barbie's Digital Closet ✨</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@400;700&display=swap');
+    
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: linear-gradient(45deg, #ff69b4, #ff1493, #da70d6, #ba55d3);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.2); }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 48px;
+      color: #fff;
+      text-shadow: 4px 4px 8px rgba(255, 20, 147, 0.8);
+      margin-bottom: 10px;
+      animation: bounce 2s infinite;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #ffe4e1;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .main-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .closet-panel {
+      background: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffb6c1);
+      border: 4px solid #ff69b4;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .closet-panel::before {
+      content: '✨';
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      animation: sparkle 2s infinite;
+    }
+
+    .outfit-display-container {
+      width: 400px;
+      min-height: 500px;
+    }
+
+    .wardrobe-container {
+      width: 300px;
+    }
+
+    #outfit-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 15px;
+      background: linear-gradient(135deg, #fff, #ffe4e1);
+      border: 3px solid #ff1493;
+      border-radius: 15px;
+      padding: 25px;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(255, 182, 193, 0.5);
+    }
+
+    .outfit-item {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,228,225,0.6));
+      border-radius: 15px;
+      padding: 10px;
+      border: 2px dashed #ff69b4;
+      transition: all 0.3s ease;
+    }
+
+    .outfit-item:hover {
+      border-color: #ff1493;
+      background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,182,193,0.7));
+      transform: scale(1.02);
+    }
+
+    .top-container {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .bottom-container, .shoes-container {
+      grid-column: 1 / -1;
+    }
+
+    .top, .sweater, .bottom, .shoes {
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: 3px solid transparent;
+      cursor: pointer;
+      background: rgba(255,255,255,0.8);
+      padding: 5px;
+    }
+
+    .top:hover, .sweater:hover, .bottom:hover, .shoes:hover {
+      transform: scale(1.1) rotate(2deg);
+      border-color: #ff1493;
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+      background: rgba(255,255,255,1);
+    }
+
+    .top, .sweater {
+      width: 120px;
+      height: auto;
+      max-height: 160px;
+      object-fit: contain;
+    }
+
+    .bottom {
+      width: 160px;
+      height: auto;
+      max-height: 180px;
+      object-fit: contain;
+    }
+
+    .shoes {
+      width: 140px;
+      height: auto;
+      max-height: 100px;
+      object-fit: contain;
+    }
+
+    button {
+      font-family: 'Fredoka One', cursive;
+      padding: 15px 25px;
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 15px rgba(255, 20, 147, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background: linear-gradient(45deg, #ff1493, #da70d6);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 20, 147, 0.6);
+    }
+
+    button:active {
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .toggle-container {
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid #ff69b4;
+      border-radius: 20px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toggle-container label {
+      font-family: 'Fredoka One', cursive;
+      font-size: 18px;
+      color: #ff1493;
+      cursor: pointer;
+      text-shadow: 1px 1px 2px rgba(255, 20, 147, 0.3);
+    }
+
+    #casual-toggle {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #ff69b4;
+    }
+
+    .item-hint {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 10px rgba(255, 20, 147, 0.4);
+    }
+
+    .outfit-item:hover .item-hint {
+      opacity: 1;
+    }
+
+    .controls {
+      margin-top: 25px;
+    }
+
+    .panel-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 24px;
+      color: #ff1493;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.3);
+    }
+
+    .sparkle-decoration {
+      position: absolute;
+      color: #ff69b4;
+      font-size: 16px;
+      animation: sparkle 3s infinite;
+      pointer-events: none;
+    }
+
+    .sparkle-1 { top: 20px; left: 20px; animation-delay: 0s; }
+    .sparkle-2 { top: 50px; right: 30px; animation-delay: 1s; }
+    .sparkle-3 { bottom: 40px; left: 40px; animation-delay: 2s; }
+    .sparkle-4 { bottom: 60px; right: 20px; animation-delay: 0.5s; }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .outfit-display-container, .wardrobe-container {
+        width: 90%;
+        max-width: 400px;
+      }
+      h1 { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkle-decoration sparkle-1">✨</div>
+  <div class="sparkle-decoration sparkle-2">💖</div>
+  <div class="sparkle-decoration sparkle-3">⭐</div>
+  <div class="sparkle-decoration sparkle-4">✨</div>
+
+  <h1>✨ Barbie's Digital Closet ✨</h1>
+  <p class="subtitle">Mix & Match Your Perfect Look!</p>
+
+  <div class="main-container">
+    <div class="closet-panel outfit-display-container">
+      <div class="panel-title">💕 Your Outfit 💕</div>
+      
+      <div class="toggle-container">
+        <input type="checkbox" id="casual-toggle">
+        <label for="casual-toggle">✨ Casual Mode ✨</label>
+      </div>
+
+      <div id="outfit-display">
+        <div class="top-container">
+          <div class="outfit-item">
+            <img id="top" class="top" src="Wardrobe/placeholder.png" alt="Top">
+            <div class="item-hint">Click to change top! 💖</div>
+          </div>
+          <div class="outfit-item">
+            <img id="sweater" class="sweater" src="Wardrobe/placeholder.png" alt="Layer">
+            <div class="item-hint">Click to change layer! ✨</div>
+          </div>
+        </div>
+        <div class="bottom-container outfit-item">
+          <img id="bottom" class="bottom" src="Wardrobe/placeholder.png" alt="Bottom">
+          <div class="item-hint">Click to change bottom! 🌟</div>
+        </div>
+        <div class="shoes-container outfit-item">
+          <img id="shoes" class="shoes" src="Wardrobe/placeholder.png" alt="Shoes">
+          <div class="item-hint">Click to change shoes! 👠</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button onclick="generateOutfit()">✨ Generate Outfit ✨</button>
+        <button onclick="toggleSweater()">💕 Toggle Layer 💕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const allTops = [
+      "Wardrobe/Tops/AMITW short sleeve tshirt.png",
+      "Wardrobe/Tops/ann taylor navy and gold blouse.png",
+      "Wardrobe/Tops/ann taylor V neck blouse.png",
+      "Wardrobe/Tops/ann taylor white scoop neck blouse.png",
+      "Wardrobe/Tops/bear short sleeve tshirt.png",
+      "Wardrobe/Tops/black long sleeve.png",
+      "Wardrobe/Tops/black turtleneck tank.png",
+      "Wardrobe/Tops/blue gray long sleeve.png",
+      "Wardrobe/Tops/blush pink long sleeve blouse.png",
+      "Wardrobe/Tops/cherish trans kids tshirt.png",
+      "Wardrobe/Tops/cream short sleeved tee.png",
+      "Wardrobe/Tops/fitted dark gray tee.png",
+      "Wardrobe/Tops/gray green long sleeve.png",
+      "Wardrobe/Tops/gray heathered long sleeve.png",
+      "Wardrobe/Tops/H&M dark teal blouse.png",
+      "Wardrobe/Tops/heathered dark gray tee.png",
+      "Wardrobe/Tops/light teal blouse.png",
+      "Wardrobe/Tops/loose dark gray tee.png",
+      "Wardrobe/Tops/navy tank top.png",
+      "Wardrobe/Tops/nude long sleeve.png",
+      "Wardrobe/Tops/olive green tank top.png",
+      "Wardrobe/Tops/soft white tshirt.png",
+      "Wardrobe/Tops/stone green long sleeve.png",
+      "Wardrobe/Tops/striped turtleneck.png",
+      "Wardrobe/Tops/structured white tee.png",
+      "Wardrobe/Tops/white long sleeve.png",
+      "Wardrobe/Tops/zara white button up.png"
+    ];
+
+    const allBottoms = [
+      "Wardrobe/Bottoms/ann taylor navy slacks.png",      
+      "Wardrobe/Bottoms/black athletic slacks.png",
+      "Wardrobe/Bottoms/dark gray fitted jeans.png",
+      "Wardrobe/Bottoms/green slacks.png",
+      "Wardrobe/Bottoms/khaki slacks.png",
+      "Wardrobe/Bottoms/rust slacks.png",
+      "Wardrobe/Bottoms/stone purple slacks",
+      "Wardrobe/Bottoms/straight leg jeans.png",
+      "Wardrobe/Bottoms/white overalls.png",
+      "Wardrobe/Bottoms/wide leg jeans.png"
+    ];
+
+    const sweaters = [
+      "Wardrobe/Sweaters/ann taylor navy blazer.png",
+      "Wardrobe/Sweaters/ann taylor red blazer.png",
+      "Wardrobe/Sweaters/black merina wool v neck.png",
+      "Wardrobe/Sweaters/black patagonia fleece.png",
+      "Wardrobe/Sweaters/blue patagonia fleece.png",
+      "Wardrobe/Sweaters/calvin klein black blazer.png",
+      "Wardrobe/Sweaters/cream v neck wool sweater.png",
+      "Wardrobe/Sweaters/flannel.png",
+      "Wardrobe/Sweaters/gray cardigan.png",
+      "Wardrobe/Sweaters/gray heathered sweater.png",
+      "Wardrobe/Sweaters/gray patagonia fleece.png",
+      "Wardrobe/Sweaters/H&M heathered turtleneck.png",
+      "Wardrobe/Sweaters/navy knitted jumper.png",
+      "Wardrobe/Sweaters/navy shacket.png",
+      "Wardrobe/Sweaters/oatmeal cardigan.png",
+      "Wardrobe/Sweaters/olive carhartt sweater.png",
+      "Wardrobe/Sweaters/olive green cashmere jumper.png",
+      "Wardrobe/Sweaters/olive green Wash U sweater.png",
+      "Wardrobe/Sweaters/patagonia navy jumper.png",
+      "Wardrobe/Sweaters/pink corduroy jacket.png",
+      "Wardrobe/Sweaters/soft black blazer.png",
+      "Wardrobe/Sweaters/striped button down shirt.png",
+      "Wardrobe/Sweaters/theory black blazer.png",
+      "Wardrobe/Sweaters/wash u medicine sweater.png",
+      "Wardrobe/Sweaters/zara olive green jacket.png"
+    ];
+
+    const shoes = [
+      "Wardrobe/Shoes/birk sandals.png",
+      "Wardrobe/Shoes/blundstone boots.png",
+      "Wardrobe/Shoes/black wool clogs.png",
+    ];
+
+    let casualMode = false;
+    let sweaterVisible = true;
+
+    document.getElementById("casual-toggle").addEventListener("change", (e) => {
+      casualMode = e.target.checked;
+    });
+
+    function getFilteredItems(items, casualDisallowed, workDisallowed) {
+      if (casualMode) {
+        return items.filter(item => !casualDisallowed.some(keyword => item.toLowerCase().includes(keyword.toLowerCase())));
+      } else {
+        return items.filter(item => !workDisallowed.some(keyword => item.toLowerCase().includes(keyword.toLowerCase())));
+      }
+    }
+
+    function generateOutfit() {
+      const tops = getFilteredItems(allTops, 
+        ["blouse", "button up"],
+        ["tshirt", "tank"]
+      );
+      
+      const bottoms = getFilteredItems(allBottoms, 
+        ["slacks"],
+        ["jeans", "overalls"]
+      );
+      
+      const filteredSweaters = getFilteredItems(sweaters, 
+        ["blazer"],
+        ["fleece", "flannel"]
+      );
+      
+      const filteredShoes = getFilteredItems(shoes, 
+        [],
+        ["sandals"]
+      );
+
+      document.getElementById("top").src = tops.length > 0
+        ? tops[Math.floor(Math.random() * tops.length)]
+        : "Wardrobe/placeholder.png";
+
+      document.getElementById("bottom").src = bottoms.length > 0
+        ? bottoms[Math.floor(Math.random() * bottoms.length)]
+        : "Wardrobe/placeholder.png";
+
+      document.getElementById("sweater").src = filteredSweaters.length > 0
+        ? filteredSweaters[Math.floor(Math.random() * filteredSweaters.length)]
+        : "Wardrobe/placeholder.png";
+
+      document.getElementById("shoes").src = filteredShoes.length > 0
+        ? filteredShoes[Math.floor(Math.random() * filteredShoes.length)]
+        : "Wardrobe/placeholder.png";
+      
+      if (!sweaterVisible) {
+        toggleSweater();
+      }
+    }
+
+    function toggleSweater() {
+      const sweaterElement = document.getElementById("sweater");
+      sweaterVisible = !sweaterVisible;
+      sweaterElement.style.opacity = sweaterVisible ? "1" : "0";
+      sweaterElement.style.pointerEvents = sweaterVisible ? "auto" : "none";
+    }
+
+    function swapItem(elementId, items, casualDisallowed = [], workDisallowed = []) {
+      const filteredItems = getFilteredItems(items, casualDisallowed, workDisallowed);
+      if (filteredItems.length > 0) {
+        const randomItem = filteredItems[Math.floor(Math.random() * filteredItems.length)];
+        document.getElementById(elementId).src = randomItem;
+      }
+    }
+
+    document.getElementById("top").addEventListener("click", () => 
+      swapItem("top", allTops, ["blouse", "button up"], ["tshirt", "tank"])
+    );
+    document.getElementById("bottom").addEventListener("click", () => 
+      swapItem("bottom", allBottoms, ["slacks"], ["jeans", "overalls"])
+    );
+    document.getElementById("sweater").addEventListener("click", () => 
+      swapItem("sweater", sweaters, ["blazer"], ["fleece", "flannel"])
+    );
+    document.getElementById("shoes").addEventListener("click", () => 
+      swapItem("shoes", shoes, [], ["sandals"])
+    );
+  </script>
+</body>
+</html>
