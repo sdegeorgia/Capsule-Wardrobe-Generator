@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Wardrobe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 300;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .outfit-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .controls-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .outfit-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .outfit-item {
+      background: #f8fafc;
+      border: 2px dashed #e2e8f0;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      min-height: 120px;
+    }
+
+    .outfit-item:hover {
+      border-color: #667eea;
+      background: #f1f5f9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+
+    .top-container {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .bottom-container, .dress-container, .shoes-container {
+      grid-column: 1 / -1;
+    }
+
+    .outfit-item img {
+      max-width: 100%;
+      max-height: 140px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .outfit-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .item-label {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(102, 126, 234, 0.9);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .outfit-item:hover .item-label {
+      opacity: 1;
+    }
+
+    .controls-section {
+      margin-bottom: 24px;
+    }
+
+    .controls-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .temperature-toggle {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .temp-option {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      background: transparent;
+      color: #64748b;
+    }
+
+    .temp-option.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dress-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dress-toggle:hover {
+      background: #f1f5f9;
+      border-color: #667eea;
+    }
+
+    .dress-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #667eea;
+    }
+
+    .dress-toggle label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-secondary {
+      background: #f8fafc;
+      color: #374151;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .layer-control {
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .layer-control.hidden-layer {
+      opacity: 0.3;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .outfit-panel, .controls-panel {
+        padding: 24px;
+      }
+      
+      .top-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Digital Wardrobe</h1>
+      <p>Create your perfect outfit combination</p>
+    </div>
+
+    <div class="main-grid">
+      <div class="outfit-panel">
+        <h2 class="panel-title">Your Outfit</h2>
+        
+        <div class="outfit-display" id="outfit-display">
+          <div class="top-container">
+            <div class="outfit-item" onclick="swapTop()">
+              <img id="top" src="Wardrobe/placeholder.png" alt="Top">
+              <div class="item-label">Top</div>
+            </div>
+            <div class="outfit-item layer-control" onclick="swapSweater()">
+              <img id="sweater" src="Wardrobe/placeholder.png" alt="Layer">
+              <div class="item-label">Layer</div>
+            </div>
+          </div>
+          
+          <div class="bottom-container outfit-item" onclick="swapBottom()">
+            <img id="bottom" src="Wardrobe/placeholder.png" alt="Bottom">
+            <div class="item-label">Bottom</div>
+          </div>
+          
+          <div class="dress-container outfit-item hidden" onclick="swapDress()">
+            <img id="dress" src="Wardrobe/placeholder.png" alt="Dress">
+            <div class="item-label">Dress</div>
+          </div>
+          
+          <div class="shoes-container outfit-item" onclick="swapShoes()">
+            <img id="shoes" src="Wardrobe/placeholder.png" alt="Shoes">
+            <div class="item-label">Shoes</div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="generateOutfit()">Generate New Outfit</button>
+          <button class="btn btn-secondary" onclick="toggleSweater()">Toggle Layer</button>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <div class="controls-section">
+          <div class="section-title">Weather</div>
+          <div class="temperature-toggle">
+            <button class="temp-option active" id="warm-btn" onclick="setTemperature(false)">
+              Warm
+            </button>
+            <button class="temp-option" id="cold-btn" onclick="setTemperature(true)">
+              Cold
+            </button>
+          </div>
+        </div>
+
+        <div class="controls-section">
+          <div class="section-title">Style</div>
+          <div class="dress-toggle" onclick="toggleDressMode()">
+            <input type="checkbox" id="dress-toggle">
+            <label for="dress-toggle">Dress Mode</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+const allTops = [
+  "Wardrobe/Tops/H&M baby tee blue.png",
+  "Wardrobe/Tops/bear short sleeve tshirt.png",
+  "Wardrobe/Tops/black cap short sleeves.png",
+  "Wardrobe/Tops/black long sleeve.png",
+  "Wardrobe/Tops/black turtleneck tank.png",
+  "Wardrobe/Tops/blue gray long sleeve.png",
+  "Wardrobe/Tops/cherish trans kids tshirt.png",
+  "Wardrobe/Tops/cream short sleeved tee.png",
+  "Wardrobe/Tops/fitted dark gray tee.png",
+  "Wardrobe/Tops/gray green long sleeve.png",
+  "Wardrobe/Tops/heathered dark gray tee.png",
+  "Wardrobe/Tops/linen crop top.png",
+  "Wardrobe/Tops/loose dark gray tee.png",
+  "Wardrobe/Tops/madewell white tshirt.png",
+  "Wardrobe/Tops/navy striped long sleeve.png",
+  "Wardrobe/Tops/navy tank top.png",
+  "Wardrobe/Tops/nude long sleeve.png",
+  "Wardrobe/Tops/olive green tank top.png",
+  "Wardrobe/Tops/striped turtleneck.png",
+  "Wardrobe/Tops/structured white tee.png",
+  "Wardrobe/Tops/uniqlo blue baby tee.png",
+  "Wardrobe/Tops/uniqlo white baby tee.png",
+  "Wardrobe/Tops/white long sleeve.png",
+  "Wardrobe/Tops/white old navy ribbed tank.png",
+  "Wardrobe/Tops/zara white button up.png",
+];
+
+const allBottoms = [
+  "Wardrobe/Bottoms/black athletic slacks.png",
+  "Wardrobe/Bottoms/black cargo pants.png",
+  "Wardrobe/Bottoms/dark gray fitted jeans.png",
+  "Wardrobe/Bottoms/green slacks.png",
+  "Wardrobe/Bottoms/khaki slacks.png",
+  "Wardrobe/Bottoms/painted levi jeans.png",
+  "Wardrobe/Bottoms/red velvet bell bottoms.png",
+  "Wardrobe/Bottoms/rust slacks.png",
+  "Wardrobe/Bottoms/rust target slacks.png",
+  "Wardrobe/Bottoms/stone purple slacks.png",
+  "Wardrobe/Bottoms/straight leg jeans.png",
+  "Wardrobe/Bottoms/white overalls.png",
+  "Wardrobe/Bottoms/wide leg jeans.png",
+];
+
+const sweaters = [
+  "Wardrobe/Sweaters/H&M heathered turtleneck.png",
+  "Wardrobe/Sweaters/black merina wool v neck.png",
+  "Wardrobe/Sweaters/black patagonia fleece.png",
+  "Wardrobe/Sweaters/blue patagonia fleece.png",
+  "Wardrobe/Sweaters/cream v neck wool sweater.png",
+  "Wardrobe/Sweaters/flannel.png",
+  "Wardrobe/Sweaters/gray cardigan.png",
+  "Wardrobe/Sweaters/gray heathered sweater.png",
+  "Wardrobe/Sweaters/gray patagonia fleece.png",
+  "Wardrobe/Sweaters/navy knitted jumper.png",
+  "Wardrobe/Sweaters/navy shacket.png",
+  "Wardrobe/Sweaters/oatmeal cardigan.png",
+  "Wardrobe/Sweaters/olive carhartt sweater.png",
+  "Wardrobe/Sweaters/olive green Wash U sweater.png",
+  "Wardrobe/Sweaters/olive green cashmere jumper.png",
+  "Wardrobe/Sweaters/patagonia navy jumper.png",
+  "Wardrobe/Sweaters/pink corduroy jacket.png",
+  "Wardrobe/Sweaters/red flannel.png",
+  "Wardrobe/Sweaters/striped button down shirt.png",
+  "Wardrobe/Sweaters/wash u medicine sweater.png",
+  "Wardrobe/Sweaters/zara olive green jacket.png",
+];
+
+const allDresses = [
+  "Wardrobe/Dresses/black dress.png",
+  "Wardrobe/Dresses/blue dress with buttons.png",
+  "Wardrobe/Dresses/navy dress with pockets.png",
+  "Wardrobe/Dresses/old navy rust red dress.png",
+  "Wardrobe/Dresses/red loft dress.png",
+  "Wardrobe/Dresses/white linen dress.png",
+];
+
+const shoes = [
+  "Wardrobe/Shoes/birk sandals.png",
+  "Wardrobe/Shoes/black wool clogs.png",
+  "Wardrobe/Shoes/blue recovery sandals.png",
+  "Wardrobe/Shoes/blundstone boots.png",
+  "Wardrobe/Shoes/white brooks sneakers.png",
+];
+
+let isCold = false;
+let sweaterVisible = true;
+let dressMode = false;
+
+function setTemperature(cold) {
+  isCold = cold;
+  const warmBtn = document.getElementById('warm-btn');
+  const coldBtn = document.getElementById('cold-btn');
+  
+  if (cold) {
+    warmBtn.classList.remove('active');
+    coldBtn.classList.add('active');
+  } else {
+    coldBtn.classList.remove('active');
+    warmBtn.classList.add('active');
+  }
+}
+
+function toggleDressMode() {
+  const checkbox = document.getElementById('dress-toggle');
+  dressMode = checkbox.checked;
+  
+  const topContainer = document.querySelector('.top-container');
+  const bottomContainer = document.querySelector('.bottom-container');
+  const dressContainer = document.querySelector('.dress-container');
+  
+  if (dressMode) {
+    // In dress mode: hide top and bottom, show dress, but keep sweater visible
+    document.querySelector('.top-container .outfit-item:first-child').classList.add('hidden');
+    bottomContainer.classList.add('hidden');
+    dressContainer.classList.remove('hidden');
+    
+    if (allDresses.length > 0) {
+      document.getElementById("dress").src = allDresses[Math.floor(Math.random() * allDresses.length)];
+    }
+  } else {
+    // In separates mode: show top and bottom, hide dress
+    document.querySelector('.top-container .outfit-item:first-child').classList.remove('hidden');
+    bottomContainer.classList.remove('hidden');
+    dressContainer.classList.add('hidden');
+  }
+}
+
+function getFilteredTops() {
+  const shortSleeveKeywords = ["tee", "tank", "tshirt", "cap short sleeves", "short sleeve", "baby tee", "crop"];
+  
+  if (isCold) {
+    return allTops;
+  } else {
+    return allTops.filter(item => 
+      shortSleeveKeywords.some(keyword => 
+        item.toLowerCase().includes(keyword.toLowerCase())
+      )
+    );
+  }
+}
+
+function generateOutfit() {
+  if (dressMode) {
+    document.getElementById("dress").src = allDresses.length > 0
+      ? allDresses[Math.floor(Math.random() * allDresses.length)]
+      : "Wardrobe/placeholder.png";
+  } else {
+    const tops = getFilteredTops();
+    
+    document.getElementById("top").src = tops.length > 0
+      ? tops[Math.floor(Math.random() * tops.length)]
+      : "Wardrobe/placeholder.png";
+
+    document.getElementById("bottom").src = allBottoms.length > 0
+      ? allBottoms[Math.floor(Math.random() * allBottoms.length)]
+      : "Wardrobe/placeholder.png";
+  }
+
+  document.getElementById("sweater").src = sweaters.length > 0
+    ? sweaters[Math.floor(Math.random() * sweaters.length)]
+    : "Wardrobe/placeholder.png";
+
+  document.getElementById("shoes").src = shoes.length > 0
+    ? shoes[Math.floor(Math.random() * shoes.length)]
+    : "Wardrobe/placeholder.png";
+  
+  if (!sweaterVisible) {
+    toggleSweater();
+  }
+}
+
+function toggleSweater() {
+  const sweaterElements = document.querySelectorAll('.layer-control');
+  sweaterVisible = !sweaterVisible;
+  
+  sweaterElements.forEach(element => {
+    if (sweaterVisible) {
+      element.classList.remove('hidden-layer');
+    } else {
+      element.classList.add('hidden-layer');
+    }
+  });
+}
+
+function swapTop() {
+  const tops = getFilteredTops();
+  if (tops.length > 0) {
+    const randomTop = tops[Math.floor(Math.random() * tops.length)];
+    document.getElementById("top").src = randomTop;
+  }
+}
+
+function swapBottom() {
+  if (allBottoms.length > 0) {
+    const randomBottom = allBottoms[Math.floor(Math.random() * allBottoms.length)];
+    document.getElementById("bottom").src = randomBottom;
+  }
+}
+
+function swapSweater() {
+  if (sweaters.length > 0) {
+    const randomSweater = sweaters[Math.floor(Math.random() * sweaters.length)];
+    document.getElementById("sweater").src = randomSweater;
+  }
+}
+
+function swapShoes() {
+  if (shoes.length > 0) {
+    const randomShoes = shoes[Math.floor(Math.random() * shoes.length)];
+    document.getElementById("shoes").src = randomShoes;
+  }
+}
+
+function swapDress() {
+  if (allDresses.length > 0) {
+    const randomDress = allDresses[Math.floor(Math.random() * allDresses.length)];
+    document.getElementById("dress").src = randomDress;
+  }
+}
+
+// Update dress toggle checkbox when clicked
+document.addEventListener('DOMContentLoaded', function() {
+  const dressToggleContainer = document.querySelector('.dress-toggle');
+  const checkbox = document.getElementById('dress-toggle');
+  
+  dressToggleContainer.addEventListener('click', function(e) {
+    if (e.target !== checkbox) {
+      checkbox.checked = !checkbox.checked;
+      toggleDressMode();
+    }
+  });
+  
+  checkbox.addEventListener('change', toggleDressMode);
+});
+  </script>
+</body>
+</html>
