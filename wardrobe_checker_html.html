@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wardrobe File Checker</title>
+  <style>
+    body {
+      font-family: 'Comic Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #ff69b4, #da70d6);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    button {
+      background: linear-gradient(45deg, #ff1493, #ff69b4);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 18px;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .results {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      text-align: left;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .drag-area {
+      border: 3px dashed rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+      padding: 40px;
+      margin: 20px 0;
+      transition: all 0.3s ease;
+    }
+
+    .drag-area.dragover {
+      border-color: #ff1493;
+      background: rgba(255, 20, 147, 0.2);
+    }
+
+    .file-list {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .success { color: #4CAF50; font-weight: bold; }
+    .error { color: #f44336; font-weight: bold; }
+    .warning { color: #ff9800; font-weight: bold; }
+    .info { color: #2196F3; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Wardrobe File Checker</h1>
+    <p>Check if your wardrobe files match what's in your outfit generator script!</p>
+    
+    <div class="drag-area" id="dragArea">
+      <p>📁 Drop your Wardrobe folder here</p>
+      <p>OR</p>
+      <button onclick="document.getElementById('folderInput').click()">📂 Select Wardrobe Folder</button>
+      <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+    </div>
+
+    <button onclick="checkFromArrays()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+      🔍 Quick Check (Test Image Loading)
+    </button>
+
+    <div id="results" class="results hidden"></div>
+  </div>
+
+  <script>
+    // Your wardrobe arrays from the outfit generator
+    const allTops = [
+      "Wardrobe/Tops/AMITW short sleeve tshirt.png",
+      "Wardrobe/Tops/ann taylor navy and gold blouse.png",
+      "Wardrobe/Tops/ann taylor V neck blouse.png",
+      "Wardrobe/Tops/ann taylor white scoop neck blouse.png",
+      "Wardrobe/Tops/bear short sleeve tshirt.png",
+      "Wardrobe/Tops/black long sleeve.png",
+      "Wardrobe/Tops/black turtleneck tank.png",
+      "Wardrobe/Tops/blue gray long sleeve.png",
+      "Wardrobe/Tops/blush pink long sleeve blouse.png",
+      "Wardrobe/Tops/cherish trans kids tshirt.png",
+      "Wardrobe/Tops/cream short sleeved tee.png",
+      "Wardrobe/Tops/fitted dark gray tee.png",
+      "Wardrobe/Tops/gray green long sleeve.png",
+      "Wardrobe/Tops/gray heathered long sleeve.png",
+      "Wardrobe/Tops/H&M dark teal blouse.png",
+      "Wardrobe/Tops/heathered dark gray tee.png",
+      "Wardrobe/Tops/light teal blouse.png",
+      "Wardrobe/Tops/loose dark gray tee.png",
+      "Wardrobe/Tops/navy tank top.png",
+      "Wardrobe/Tops/nude long sleeve.png",
+      "Wardrobe/Tops/olive green tank top.png",
+      "Wardrobe/Tops/soft white tshirt.png",
+      "Wardrobe/Tops/stone green long sleeve.png",
+      "Wardrobe/Tops/striped turtleneck.png",
+      "Wardrobe/Tops/structured white tee.png",
+      "Wardrobe/Tops/white long sleeve.png",
+      "Wardrobe/Tops/zara white button up.png"
+    ];
+
+    const allBottoms = [
+      "Wardrobe/Bottoms/ann taylor navy slacks.png",      
+      "Wardrobe/Bottoms/black athletic slacks.png",
+      "Wardrobe/Bottoms/dark gray fitted jeans.png",
+      "Wardrobe/Bottoms/green slacks.png",
+      "Wardrobe/Bottoms/khaki slacks.png",
+      "Wardrobe/Bottoms/rust slacks.png",
+      "Wardrobe/Bottoms/stone purple slacks",
+      "Wardrobe/Bottoms/straight leg jeans.png",
+      "Wardrobe/Bottoms/white overalls.png",
+      "Wardrobe/Bottoms/wide leg jeans.png"
+    ];
+
+    const sweaters = [
+      "Wardrobe/Sweaters/ann taylor navy blazer.png",
+      "Wardrobe/Sweaters/ann taylor red blazer.png",
+      "Wardrobe/Sweaters/black merina wool v neck.png",
+      "Wardrobe/Sweaters/black patagonia fleece.png",
+      "Wardrobe/Sweaters/blue patagonia fleece.png",
+      "Wardrobe/Sweaters/calvin klein black blazer.png",
+      "Wardrobe/Sweaters/cream v neck wool sweater.png",
+      "Wardrobe/Sweaters/flannel.png",
+      "Wardrobe/Sweaters/gray cardigan.png",
+      "Wardrobe/Sweaters/gray heathered sweater.png",
+      "Wardrobe/Sweaters/gray patagonia fleece.png",
+      "Wardrobe/Sweaters/H&M heathered turtleneck.png",
+      "Wardrobe/Sweaters/navy knitted jumper.png",
+      "Wardrobe/Sweaters/navy shacket.png",
+      "Wardrobe/Sweaters/oatmeal cardigan.png",
+      "Wardrobe/Sweaters/olive carhartt sweater.png",
+      "Wardrobe/Sweaters/olive green cashmere jumper.png",
+      "Wardrobe/Sweaters/olive green Wash U sweater.png",
+      "Wardrobe/Sweaters/patagonia navy jumper.png",
+      "Wardrobe/Sweaters/pink corduroy jacket.png",
+      "Wardrobe/Sweaters/soft black blazer.png",
+      "Wardrobe/Sweaters/striped button down shirt.png",
+      "Wardrobe/Sweaters/theory black blazer.png",
+      "Wardrobe/Sweaters/wash u medicine sweater.png",
+      "Wardrobe/Sweaters/zara olive green jacket.png"
+    ];
+
+    const shoes = [
+      "Wardrobe/Shoes/birk sandals.png",
+      "Wardrobe/Shoes/blundstone boots.png",
+      "Wardrobe/Shoes/black wool clogs.png",
+    ];
+
+    const allScriptFiles = [...allTops, ...allBottoms, ...sweaters, ...shoes];
+
+    // Drag and drop functionality
+    const dragArea = document.getElementById('dragArea');
+    const folderInput = document.getElementById('folderInput');
+    const results = document.getElementById('results');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dragArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dragArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dragArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      dragArea.classList.add('dragover');
+    }
+
+    function unhighlight(e) {
+      dragArea.classList.remove('dragover');
+    }
+
+    dragArea.addEventListener('drop', handleDrop, false);
+    folderInput.addEventListener('change', handleFiles, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles({ target: { files: files } });
+    }
+
+    function handleFiles(e) {
+      const files = Array.from(e.target.files);
+      checkFiles(files);
+    }
+
+    function checkFiles(files) {
+      const actualFiles = files
+        .filter(file => file.name.toLowerCase().endsWith('.png'))
+        .map(file => file.webkitRelativePath || file.name);
+
+      displayResults(actualFiles);
+    }
+
+    function checkFromArrays() {
+      showResults('🔍 Testing image loading from your script arrays...\n\n');
+      
+      const missingFiles = [];
+      let checkedCount = 0;
+      const totalFiles = allScriptFiles.length;
+
+      allScriptFiles.forEach((file, index) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          checkedCount++;
+          appendResult(`✅ ${file}\n`);
+          if (checkedCount === totalFiles) {
+            finishImageCheck(missingFiles);
+          }
+        };
+        
+        img.onerror = () => {
+          checkedCount++;
+          missingFiles.push(file);
+          appendResult(`❌ ${file}\n`);
+          if (checkedCount === totalFiles) {
+            finishImageCheck(missingFiles);
+          }
+        };
+        
+        img.src = file;
+      });
+    }
+
+    function finishImageCheck(missingFiles) {
+      if (missingFiles.length === 0) {
+        appendResult('\n🎉 All images loaded successfully!');
+      } else {
+        appendResult(`\n❌ ${missingFiles.length} images failed to load. Check the file paths above.`);
+        appendResult('\n💡 Tip: Make sure the file names match exactly (including spaces and capitalization)');
+      }
+    }
+
+    function displayResults(actualFiles) {
+      let output = `🔍 Checking ${actualFiles.length} files...\n\n`;
+      
+      const missingFiles = allScriptFiles.filter(scriptFile => 
+        !actualFiles.some(actualFile => actualFile.replace(/\\/g, '/').endsWith(scriptFile.replace('Wardrobe/', '')))
+      );
+      
+      const extraFiles = actualFiles.filter(actualFile => 
+        !allScriptFiles.some(scriptFile => actualFile.replace(/\\/g, '/').endsWith(scriptFile.replace('Wardrobe/', '')))
+      );
+
+      if (missingFiles.length === 0 && extraFiles.length === 0) {
+        output += '✅ Perfect match! All files are accounted for.\n';
+      } else {
+        if (missingFiles.length > 0) {
+          output += '❌ FILES IN SCRIPT BUT MISSING FROM FOLDER:\n';
+          missingFiles.forEach(file => output += `   ${file}\n`);
+          output += '\n';
+        }
+        
+        if (extraFiles.length > 0) {
+          output += '📂 FILES IN FOLDER BUT NOT IN SCRIPT:\n';
+          extraFiles.forEach(file => output += `   ${file}\n`);
+          output += '\n';
+          
+          output += '📋 COPY THIS TO UPDATE YOUR SCRIPT:\n';
+          output += generateNewArrays(actualFiles);
+        }
+      }
+
+      showResults(output);
+    }
+
+    function generateNewArrays(actualFiles) {
+      const categories = {
+        allTops: actualFiles.filter(f => f.includes('Tops/')),
+        allBottoms: actualFiles.filter(f => f.includes('Bottoms/')),
+        sweaters: actualFiles.filter(f => f.includes('Sweaters/')),
+        shoes: actualFiles.filter(f => f.includes('Shoes/'))
+      };
+
+      let output = '\n';
+      Object.entries(categories).forEach(([category, files]) => {
+        if (files.length > 0) {
+          output += `const ${category} = [\n`;
+          files.sort().forEach(file => {
+            const wardrobePath = 'Wardrobe/' + file.split('Wardrobe/')[1] || file;
+            output += `  "${wardrobePath.replace(/\\/g, '/')}",\n`;
+          });
+          output += '];\n\n';
+        }
+      });
+
+      return output;
+    }
+
+    function showResults(text) {
+      results.textContent = text;
+      results.classList.remove('hidden');
+    }
+
+    function appendResult(text) {
+      results.textContent += text;
+    }
+  </script>
+</body>
+</html>
